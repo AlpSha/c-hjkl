@@ -41,7 +41,7 @@ fn parse_proc_bus_input_devices(contents: &String) -> Vec<Keyboard> {
                             parts[1].replace("\"", "").trim().to_string(),
                         )
                     } else if line.starts_with("H: Handlers=") {
-                        if let Some(t) = parts[1].replace("\"", "").trim().split(' ').last() {
+                        if let Some(t) = parts[1].replace("\"", "").trim().split(' ').find(|s| s.contains("event")) {
                             ProcBusInputDeviceEntryLine::Handlers(t.to_string())
                         } else {
                             ProcBusInputDeviceEntryLine::NotParsed
