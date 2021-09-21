@@ -5,12 +5,14 @@ const EVIOCGRAB: u64 = 1074021776;
 // From linux/input-event-codes.h
 const EV_KEY: u16 = 0x01;
 const KEY_ESC: u16 = 1;
+const KEY_ENTER: u16 = 28;
 const KEY_LEFTCTRL: u16 = 29;
 const KEY_CAPSLOCK: u16 = 58;
 const KEY_H: u16 = 35;
 const KEY_J: u16 = 36;
 const KEY_K: u16 = 37;
 const KEY_L: u16 = 38;
+const KEY_N: u16 = 49;
 const KEY_UP: u16 = 103;
 const KEY_LEFT: u16 = 105;
 const KEY_RIGHT: u16 = 106;
@@ -122,6 +124,8 @@ impl KeyboardHandler {
                     KEY_UP
                 } else if input.code == KEY_L {
                     KEY_RIGHT
+                } else if input.code == KEY_N {
+                    KEY_ENTER
                 } else {
                     0
                 };
