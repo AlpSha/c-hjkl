@@ -4,6 +4,7 @@ const EVIOCGRAB: u64 = 1074021776;
 
 // From linux/input-event-codes.h
 const EV_KEY: u16 = 0x01;
+const KEY_ESC: u16 = 1;
 const KEY_LEFTCTRL: u16 = 29;
 const KEY_CAPSLOCK: u16 = 58;
 const KEY_H: u16 = 36;
@@ -103,7 +104,7 @@ impl KeyboardHandler {
 
             // Handle Capslock / Ctrl
             if input.type_ == EV_KEY && input.code == KEY_CAPSLOCK {
-                input.code = KEY_LEFTCTRL;
+                input.code = KEY_ESC;
             }
 
             // Maintain Ctrl flag
