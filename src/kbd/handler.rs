@@ -28,9 +28,6 @@ impl KeyboardHandler {
     pub fn new(device_path: &String, debug: bool) -> KeyboardHandler {
         unsafe {
             let fd = open(device_path[..].as_ptr() as *const c_char, O_RDONLY);
-            if fd == -1 {
-                panic!("Cannot open input device: {}", device_path);
-            }
 
             KeyboardHandler {
                 device_path: device_path.to_string(),
@@ -74,7 +71,6 @@ impl KeyboardHandler {
                 std::mem::size_of::<input_event>(),
             ) != (std::mem::size_of::<input_event>() as _)
             {
-                panic!("Read a partial event");
             }
             ev.clone()
         }
