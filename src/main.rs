@@ -29,15 +29,23 @@ fn main() {
             .map(|kbd| {
                 println!("Keyboard \"{}\" detected.", kbd.name);
 
-                let mut handler = kbd::handler::KeyboardHandler::new(&kbd.device_path, verbose);
-                thread::spawn(move || {
-                    handler.run_forever();
-                })
+                let handler = kbd::handler::KeyboardHandler::new(&kbd.device_path, verbose);
+                if handler.is_none() {
+                   return None;
+                }
+                    Some(
+                        thread::spawn(move || {
+                            handler.unwrap().run_forever();
+                        })
+                    )
             })
             .collect::<Vec<_>>();
 
         for th in threads.into_iter() {
-            th.join().unwrap();
+            if th.is_none() {
+                continue;
+            }
+            th.unwrap().join().unwrap();
         }
     } else {
         panic!("Keyboards cannot be detected.");
