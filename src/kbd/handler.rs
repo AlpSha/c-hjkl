@@ -27,24 +27,28 @@ pub struct KeyboardHandler {
 }
 
 impl KeyboardHandler {
-    pub fn new(device_path: &String, debug: bool) -> KeyboardHandler {
+    pub fn new(device_path: &String, debug: bool) -> Option<KeyboardHandler> {
         unsafe {
             let fd = open(device_path[..].as_ptr() as *const c_char, O_RDONLY);
-
-            KeyboardHandler {
-                device_path: device_path.to_string(),
-                is_grabbed: false,
-                uinput: uinput::default()
-                    .unwrap()
-                    .name(format!("C-HJKL Output for {}", device_path))
-                    .unwrap()
-                    .event(uinput::event::Keyboard::All)
-                    .unwrap()
-                    .create()
-                    .unwrap(),
-                debug,
-                fd,
+            if fd == -1 {
+                return None;
             }
+            Some(
+                KeyboardHandler {
+                    device_path: device_path.to_string(),
+                    is_grabbed: false,
+                    uinput: uinput::default()
+                        .unwrap()
+                        .name(format!("C-HJKL Output for {}", device_path))
+                        .unwrap()
+                        .event(uinput::event::Keyboard::All)
+                        .unwrap()
+                        .create()
+                        .unwrap(),
+                    debug,
+                    fd,
+                }
+            )
         }
     }
 
@@ -64,7 +68,7 @@ impl KeyboardHandler {
         }
     }
 
-    fn read(&self) -> input_event {
+    fn read(&self) -> Option<input_event> {
         unsafe {
             let mut ev: input_event = std::mem::zeroed();
             if read(
@@ -73,8 +77,10 @@ impl KeyboardHandler {
                 std::mem::size_of::<input_event>(),
             ) != (std::mem::size_of::<input_event>() as _)
             {
+                return None;
+            } else {
+               return Some(ev.clone());
             }
-            ev.clone()
         }
     }
 
@@ -91,7 +97,7 @@ impl KeyboardHandler {
 
         self.grab();
         loop {
-            let mut input = self.read();
+            let mut input = self.read().unwrap();
 
             if self.debug {
                 println!(
